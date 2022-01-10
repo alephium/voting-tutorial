@@ -14,14 +14,12 @@
 }
 
 .App-header {
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
 }
 
 .App-link {
@@ -35,4 +33,66 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+div {
+  font-family: Arial;
+  display: flex;
+  flex-direction: column;
+}
+.container {
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  box-shadow: 0px 2px 5px 1px #c4c2c2;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 50px;
+  min-width: 20%;
+  padding: 20px;
+}
+h1,
+h2 {
+  color: #555454;
+}
+
+.styledInputDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 30px;
+  border: 1px solid rgba(145, 145, 145, 0.685);
+  border-radius: 8px;
+  background-color: rgb(247, 248, 250);
+  color: rgba(15, 15, 15, 0.95);
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+
+input {
+  border: none;
+  width: 90%;
+  height: 60%;
+  outline: none;
+  background-color: rgb(247, 247, 247);
+  transition: all 0.15s ease-out 0s;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+button {
+  background-color: white;
+  border-radius: 5px;
+  border-style: solid;
+  padding-top: 0px;
+  height: 30px;
+}
+
+button:hover {
+  border-color: #7e7d7d;
+}
+
+button:active {
+  background-color: #d6d6d6;
 }
