@@ -49,25 +49,25 @@ const App = () => {
   }
 
   const allocateTokens = async (contractDeploymentId: string) => {
-    const votingRef = await client.getContractRef(contractDeploymentId)
+    const contractRef = await client.getContractRef(contractDeploymentId)
     const nVoters = await client.getNVoters(contractDeploymentId)
-    const txScript = allocateTokenScript(votingRef, nVoters)
+    const txScript = allocateTokenScript(contractRef, nVoters)
     const txResult = await client.deployScript(txScript)
     logTransactionUrl(settings.explorerURL, txResult.txId)
   }
 
   const vote = async (contractDeploymentId: string, choice: boolean) => {
-    const votingRef = await client.getContractRef(contractDeploymentId)
+    const contractRef = await client.getContractRef(contractDeploymentId)
     const nVoters = await client.getNVoters(contractDeploymentId)
-    const txScript = createVotingScript(choice, votingRef, nVoters)
+    const txScript = createVotingScript(choice, contractRef, nVoters)
     const txResult = await client.deployScript(txScript)
     logTransactionUrl(settings.explorerURL, txResult.txId)
   }
 
   const close = async (contractDeploymentId: string) => {
-    const votingRef = await client.getContractRef(contractDeploymentId)
+    const contractRef = await client.getContractRef(contractDeploymentId)
     const nVoters = await client.getNVoters(contractDeploymentId)
-    const txScript = closeVotingScript(votingRef, nVoters)
+    const txScript = closeVotingScript(contractRef, nVoters)
     const txResult = await client.deployScript(txScript)
     logTransactionUrl(settings.explorerURL, txResult.txId)
   }
