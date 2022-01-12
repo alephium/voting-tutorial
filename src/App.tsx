@@ -9,10 +9,6 @@ const App = () => {
     wallet1: {
       name: 'wallet-1',
       password: 'my-secret-password'
-    },
-    wallet2: {
-      name: 'wallet-2',
-      password: 'my-secret-password'
     }
   }
 
@@ -20,6 +16,10 @@ const App = () => {
   const client = new Client(settings.nodeHost, settings.wallet1.name, settings.wallet1.password)
 
   const deployNewContract = async () => {
+    return Promise.reject('Not implemented yet')
+  }
+
+  const showState = async (contractDeploymentId: string) => {
     return Promise.reject('Not implemented yet')
   }
 
@@ -32,10 +32,6 @@ const App = () => {
   }
 
   const close = async (contractDeploymentId: string) => {
-    return Promise.reject('Not implemented yet')
-  }
-
-  const showState = async (contractDeploymentId: string) => {
     return Promise.reject('Not implemented yet')
   }
 
