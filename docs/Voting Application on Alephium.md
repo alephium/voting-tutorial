@@ -1,4 +1,4 @@
-The goal of this tutorial is to guide you through the process of building a decentralized voting application on the Alephium blockchain. We will first present a simple voting protocol and describe the transactional model of the Alephium blockchain. Then we will implement the protocol as a smart contract and use a Typescript API client to deploy the contract on the blockchain testnet and allow users to vote. At the end of this guide you will have learnt how to build a simple application on Alephium and will be ready to implement your own idea with the frontend of your choice. As an example below is a screenshot of the full voting application which is accessible [here](https://github.com/alephium/voting-demo) (TODO: replace with deployed app URL). We will implement a minimalist version of this application using the same API client and contracts but a simpler UI in React. No prior React knowledge is not required.
+The goal of this tutorial is to guide you through the process of building a dApp on the Alephium blockchain. We will first present a simple voting protocol and describe the transactional model of the Alephium blockchain. Then we will implement the protocol as a smart contract and use a Typescript API client to deploy the contract on the blockchain testnet and allow users to vote. At the end of this guide you will have learnt how to build a simple dApp on Alephium and will be ready to implement your own idea with the frontend of your choice. As an example below is a screenshot of the full voting application which is accessible [here](https://github.com/alephium/voting-demo). We will implement a minimalist version of this application using the same API client and contracts but a simpler UI in React. No prior React knowledge is required.
 
 <img title="demo" src="./assets/full-app.JPG" alt="Full application screenshot" >
 
@@ -38,7 +38,7 @@ We designed a very simple token-based voting protocol where each voter receives 
 3. The administrator closes the vote
 4. Voters see the results of the vote
 
-This protocol can be written as a smart contract, which is an interactive program deployed on a blockchain via a transaction. Smart ontracts can store information, perform computations and transfer money or tokens. They cannot be modified once deployed and the possible interactions are defined by the contract code. They allow to build decentralized applications which enable parties to follow a specific protocol without relying on a central authority.
+This protocol can be written as a smart contract, which is an interactive program deployed on a blockchain via a transaction. Smart contracts can store information, perform computations and transfer money or tokens. They cannot be modified once deployed and the possible interactions are defined by the contract code. They allow to build dApps which enable parties to follow a specific protocol without relying on a central authority.
 
 In our case the contract will be the program that allows the administrator to send tokens to voters and to accept votes. As the blockchain is a public and decentralized system, everyone can see the voting results. Of course, the contract should reject invalid operations such as when someone tries to vote twice or when unauthorized users attempt to vote. But before diving into the contract code, we will give an overview of Alephium transactional model to understand how transfers are done on this blockchain.
 
@@ -48,7 +48,7 @@ In our case the contract will be the program that allows the administrator to se
 
 Alephium is a sharded blockchain where addresses are randomly divided among `G` groups. For each pair of group `(i, j)` where `i` and `j` are in interval `[0, G -1]`, there is a blockchain which contains all transactions from group `i` to group `j`. Hence the Alephium network has in total `G x G` chains running in parallel. Currently we use `G = 4` on both the testnet and mainnet.
 
-Alephium uses the UTXO (unspent transaction output) model for its native currency **ALPH**. In simple words a UTXO can be pictured like a coin that can be used only once by registering a transaction on the network. Each transaction takes some UTXOs as input and produces new UTXOs as output. For example if address  `Alice` in group `i` only has one UTXO of 100 **ALPH** and wants to transfer 10 **ALPH** to address `Bob` in group `j`, the transaction in the chain `(i, j)` will consume the 100 **ALPH** input UTXO (hence it can no longer be used) and produce two new UTXOs, one being the 90 **ALPH** for `Bob` and the other is the excess of money going back to `Alice`. In this model, the total amount of money owned by an address is simply the sum the address UTXOs. Just like you would sum the coins in your pocket wallet to count your money.
+Alephium uses the UTXO (unspent transaction output) model for its native currency **ALPH**. In simple words a UTXO can be pictured like a coin that can be used only once by registering a transaction on the network. Each transaction takes some UTXOs as input and produces new UTXOs as output. For example if address  `Alice` in group `i` only has one UTXO of 100 **ALPH** and wants to transfer 10 **ALPH** to address `Bob` in group `j`, the transaction in the chain `(i, j)` will consume the 100 **ALPH** input UTXO (hence it can no longer be used) and produce two new UTXOs, one being the 90 **ALPH** for `Bob` and the other is the excess of 10 **ALPH** going back to `Alice`. In this model, the total amount of money owned by an address is simply the sum the address UTXOs. Just like you would sum the coins in your pocket wallet to count your money.
 
 <img title="ALPH-transaction" src="./assets/ALPH-transaction.png" alt="ALPH transaction diagram">
 
@@ -163,7 +163,7 @@ TxScript TokenAllocation {
 The main function of the script will be executed. The script loads the contract, then it approves some **ALPH** to be used in the next payable function call `voting.allocateTokens`. Finally it calls the token allocation function of the contract. The builtin function call `approveAlph!(caller, 50000000000000 * 2)` is mandatory because a contract cannot use assets from other addresses without an explicit approval by the owner. Any excess of approved assets will return to the owner as UTXOs like in the example with `Alice` and `Bob`.
 
 
-You might be wondering why the administrator sends some **ALPH** to each voter? Couldn't we just transfer the tokens? From the previous section, you should remember that tokens are contained in UTXOs, and every UTXO needs to have a small amount of **ALPH**. For each voter, the transaction will create a UTXO with a single token unit and `50000000000000` **ALPH** paid the administrator. Voters will send this amount back to the administrator when voting.
+You might be wondering why the administrator sends some **ALPH** to each voter? Couldn't we just transfer the tokens? From the previous section, you should remember that tokens are contained in UTXOs, and every UTXO needs to have a small amount of **ALPH**. For each voter, the transaction will create a UTXO with a single token unit and `50000000000000 = 0.00005 ALPH` paid the administrator. Voters will send this amount back to the administrator when voting.
 
 ## Vote
 
@@ -220,7 +220,7 @@ TxScript ClosingScript {
 }
 ```
 
-Great! Now we will use Typescript to deploy the contracts and interact with them using a node running locally.
+Great! Now we will use `Typescript` to deploy the contracts and interact with them using a node running locally.
 
 # Local node setup
 Please install and run locally a node on the **testnet** following [this guide](https://wiki.alephium.org/Testnet-Guide.html). Then create a miner wallet a described [here](https://wiki.alephium.org/GPU-Miner-Guide.html) if you don't have one yet. Miner wallets have one address per group, hence 4 addresses. You can easily obtain coins on the testnet by running [the CPU miner](https://wiki.alephium.org/CPU-Miner-Guide.html) with the addresses of one your wallet.
@@ -250,9 +250,9 @@ src
     └── voting.tsx # Helper functions to create contracts and script code
 ```
 
-Open the file `App.tsx`. The application is a simple component `App` which defines a few settings:  the URL of the local node, the explorer URL and a wallet for each voter. Please make sure you have created a miner wallet with some funds on your local node as explained in the [wallet guide](https://wiki.alephium.org/Wallet-Guide.html).
+Open the file `App.tsx`. The application is a simple component `App` which defines a few settings: the URL of the local node, the explorer URL and a wallet for each voter. Please make sure you have created a miner wallet with some funds on your local node as explained in the [wallet guide](https://wiki.alephium.org/Wallet-Guide.html).
 
-The component state variable `contractDeploymentId` is bound to the page input. Then an instance of the node API  client `Client` in `src/util/client.tsx` is created. This client is a wrapper around the [`alephium-js`](https://github.com/alephium/alephium-js) library. It provides methods to easily deploy your contract and interact with it. Finally, the callback function of each button is defined but must be implemented. We will guide you through their implementation step-by-step.
+The component state variable `contractDeploymentId` is bound to the page input. Then an instance of the node API client `Client` in `src/util/client.tsx` is created. This client is a wrapper around the [`alephium-js`](https://github.com/alephium/alephium-js) library. It provides methods to easily deploy your contract and interact with it. Finally, the callback function of each button is defined but must be implemented. We will guide you through their implementation step-by-step.
 
 ```tsx
 const App = () => {
@@ -328,7 +328,7 @@ To deploy a `TxContract` on the network we need to have a full node running loca
 2. `GET /wallets/addresses/{wallet_name}` To retrieves the public key of the active address
 3. `POST /contracts/compile-contract` Compiles the contract given as a string
 4. `POST /contracts/build-contract` Builds an unsigned transaction with the compiled contract and our public key
-5. `POST /wallets/sign` Signs the unsigned  transaction hash
+5. `POST /wallets/sign` Signs the unsigned transaction hash
 6. `POST /transactions/submit` Submits the signed transaction to the network
 
 The process to execute a `TxScript` is similar except that we'll query endpoints `POST /contracts/compile-script` and `POST /contracts/build-script` to compile and build the transaction.
@@ -396,10 +396,10 @@ Client {
 Steps 1 and 2 are done with methods `walletUnlock` and `getActiveAddress`.
 Steps 3 - 6 are done with method `deployContract` for a `TxContract` and `deployScript` for a `TxScript`.
 
-*Note: Each wallet has one its addresses declared as **active**. This active address will be selected to retrieve the publicKey and to sign data. You can change the wallet  active address with endpoint `POST /wallets/{wallet_name}/change-active-address`*
+*Note: Each wallet has one of its addresses declared as **active**. This active address will be selected to retrieve the publicKey and to sign data. You can change the wallet active address with endpoint `POST /wallets/{wallet_name}/change-active-address`*
 
 ## Contract Generation
-Open the file  `src/util/voting.tsx` and paste the following function which returns the contract as a string for a given number of voters.
+Open the file `src/util/voting.tsx` and paste the following function which returns the contract as a string for a given number of voters.
 
 ```tsx
 const utxoFee = '50000000000000'
@@ -668,6 +668,6 @@ Then check the functionality with buttons `close` and `Show contract state`.
 Congratulations, you have built your first application on Alephium! Now that all features have been implemented you can organize a vote with more voters. Try to organize a vote with your friends by adding their address to the list of voters or setup a second miner wallet on your node and vote with each address. Play around with the code or use this project as a boilerplate for your own application!
 
 # Conclusion
-In this guide, you have learnt how to build a decentralized voting application on Alephium. In particular you have learnt the basics of the Alephium UTXO model and how to write the core backend of a small React dApp on Alephium.
+In this guide, you have learnt how to build a voting dApp on Alephium. In particular you have learnt the basics of the Alephium UTXO model and how to write the core backend of a small React dApp on Alephium.
 
 We can't wait to see the awesome applications you will build on the Alephium blockchain! This tutorial code and [solution](https://github.com/alephium/voting-tutorial/tree/solution) are available in this [repository](https://github.com/alephium/voting-tutorial). If you are curious to know how the full application was developped with an enhanced user experience, take a look at our repository [voting-demo](https://github.com/alephium/voting-demo).
