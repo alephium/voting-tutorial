@@ -26,7 +26,7 @@ The goal of this tutorial is to guide you through the process of building a dApp
 
 ## Requirements
 
-- Alephium [full node installed locally](https://wiki.alephium.org/Full-Node-Starter-Guide.html)
+- Alephium [full node installed locally for **testnet**](https://wiki.alephium.org/Testnet-Guide.html)
 - Basic Javascript/Typescript knowledge
 - NodeJS with npm
 
@@ -42,7 +42,7 @@ This protocol can be written as a smart contract, which is an interactive progra
 
 In our case the contract will be the program that allows the administrator to send tokens to voters and to accept votes. As the blockchain is a public and decentralized system, everyone can see the voting results. Of course, the contract should reject invalid operations such as when someone tries to vote twice or when unauthorized users attempt to vote. But before diving into the contract code, we will give an overview of Alephium transactional model to understand how transfers are done on this blockchain.
 
-*Disclaimer: This protocol is designed only for educational purposes*
+> *Disclaimer: The code and protocol provided in this tutorial are intended to be run on the **testnet** and are for educational purposes only. We are not responsible for any loss of **ALPH** tokens by running it on the mainnet.*
 
 # Alephium transactional model
 
@@ -223,7 +223,9 @@ TxScript ClosingScript {
 Great! Now we will use `Typescript` to deploy the contracts and interact with them using a node running locally.
 
 # Local node setup
-Please install and run locally a node on the **testnet** following [this guide](https://wiki.alephium.org/Testnet-Guide.html). Then create a miner wallet a described [here](https://wiki.alephium.org/GPU-Miner-Guide.html) if you don't have one yet. Miner wallets have one address per group, hence 4 addresses. You can easily obtain coins on the testnet by running [the CPU miner](https://wiki.alephium.org/CPU-Miner-Guide.html) with the addresses of one your wallet.
+Please install and run locally a node on the **testnet** following [this guide](https://wiki.alephium.org/Testnet-Guide.html). Then create a miner wallet as described [here](https://wiki.alephium.org/GPU-Miner-Guide.html) if you don't have one yet. Miner wallets have one address per group, hence 4 addresses. You can easily obtain coins on the testnet by running [the CPU miner](https://wiki.alephium.org/CPU-Miner-Guide.html) with the addresses of one your wallet.
+
+> **WARNING: Make sure your node is running on the TESTNET before going any further.**
 
 # Project structure
 
@@ -322,7 +324,7 @@ We will first implement the `deployNewContract` function.
 # Contract Deployment in Typescript
 
 ## Overview
-To deploy a `TxContract` on the network we need to have a full node running locally. We will query the following REST API endpoints:
+To deploy a `TxContract` on the network we need to have a full node running locally on the testnet. We will query the following REST API endpoints:
 
 1. `POST /wallet/unlock/{wallet_name}` Unlocks the user wallet
 2. `GET /wallets/addresses/{wallet_name}` To retrieves the public key of the active address
