@@ -1,6 +1,6 @@
 # Voting Application on Alephium
 
-The goal of this tutorial is to guide you through the process of building a dApp on the Alephium blockchain. We will first present a simple voting protocol and describe the transactional model of the Alephium blockchain. Then we will implement the protocol as a smart contract and use a Typescript API client to deploy the contract on the blockchain testnet and allow users to vote. At the end of this guide, you will have learnt how to build a simple dApp on Alephium and will be ready to implement your own idea with the frontend of your choice. As an example below is a screenshot of the full voting application which is accessible [here](https://github.com/alephium/voting-demo). We will implement a minimalist version of this application using the same API client and contracts but a simpler UI in React. No prior React knowledge is required.
+The goal of this tutorial is to guide you through the process of building a dApp on the Alephium blockchain. We will first present a simple voting protocol and describe the transactional model of the Alephium blockchain. Then we will implement the protocol as a smart contract and use a TypeScript API client to deploy the contract on the blockchain testnet and allow users to vote. At the end of this guide, you will have learnt how to build a simple dApp on Alephium and will be ready to implement your own idea with the frontend of your choice. As an example below is a screenshot of the full voting application which is accessible [here](https://github.com/alephium/voting-demo). We will implement a minimalist version of this application using the same API client and contracts but a simpler UI in React. No prior React knowledge is required.
 
 <img title="demo" src="./assets/full-app.JPG" alt="Full application screenshot" >
 
@@ -15,7 +15,7 @@ The goal of this tutorial is to guide you through the process of building a dApp
   - [Close](#close)
 - [Local node setup](#local-node-setup)
 - [Project structure](#project-structure)
-- [Contract Deployment in Typescript](#contract-deployment-in-typescript)
+- [Contract Deployment in TypeScript](#contract-deployment-in-typescript)
   - [Overview](#overview)
   - [Contract Generation](#contract-generation)
   - [Deployment](#deployment)
@@ -30,7 +30,7 @@ The goal of this tutorial is to guide you through the process of building a dApp
 ## Requirements
 
 - Alephium [full node installed locally for **testnet**](https://wiki.alephium.org/Testnet-Guide.html)
-- Basic Javascript/Typescript knowledge
+- Basic JavaScript/TypeScript knowledge
 - NodeJS with npm
 
 ## Voting application protocol
@@ -223,7 +223,7 @@ TxScript ClosingScript {
 }
 ```
 
-Great! Now we will use `Typescript` to deploy the contracts and interact with them using a node running locally.
+Great! Now we will use `TypeScript` to deploy the contracts and interact with them using a node running locally.
 
 ## Local node setup
 Please install and run locally a node on the **testnet** following [this guide](https://wiki.alephium.org/Testnet-Guide.html). Then create a miner wallet as described [here](https://wiki.alephium.org/GPU-Miner-Guide.html) if you don't have one yet. Miner wallets have one address per group, hence 4 addresses. You can easily obtain coins on the testnet by running [the CPU miner](https://wiki.alephium.org/CPU-Miner-Guide.html) with the addresses of one of your wallets.
@@ -324,7 +324,7 @@ const App = () => {
 ```
 We will first implement the `deployNewContract` function.
 
-## Contract Deployment in Typescript
+## Contract Deployment in TypeScript
 
 ### Overview
 To deploy a `TxContract` on the network we need to have a full node running locally on the testnet. We will query the following REST API endpoints:
