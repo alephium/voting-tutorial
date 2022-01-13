@@ -326,7 +326,7 @@ We will first implement the `deployNewContract` function.
 ## Overview
 To deploy a `TxContract` on the network we need to have a full node running locally on the testnet. We will query the following REST API endpoints:
 
-1. `POST /wallet/unlock/{wallet_name}` Unlocks the user wallet
+1. `POST /wallets/unlock/{wallet_name}` Unlocks the user wallet
 2. `GET /wallets/addresses/{wallet_name}` To retrieves the public key of the active address
 3. `POST /contracts/compile-contract` Compiles the contract given as a string
 4. `POST /contracts/build-contract` Builds an unsigned transaction with the compiled contract and our public key
@@ -334,6 +334,8 @@ To deploy a `TxContract` on the network we need to have a full node running loca
 6. `POST /transactions/submit` Submits the signed transaction to the network
 
 The process to execute a `TxScript` is similar except that we'll query endpoints `POST /contracts/compile-script` and `POST /contracts/build-script` to compile and build the transaction.
+
+*Note: A proper web extension like MetaMask is planned on the Alephium development roadmap. It will provide all the functionalities of the `/wallets` endpoints and will remove the need of having a local node running for dApps*
 
 Below are the methods of the class `Client` in `src/util/client.tsx` that can query these endpoints.
 
