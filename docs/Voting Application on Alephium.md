@@ -1,6 +1,6 @@
 The goal of this tutorial is to guide you through the process of building a decentralized voting application on the Alephium blockchain. We will first present a simple voting protocol and describe the transactional model of the Alephium blockchain. Then we will implement the protocol as a smart contract and use a Typescript API client to deploy the contract on the blockchain testnet and allow users to vote. At the end of this guide you will have learnt how to build a simple application on Alephium and will be ready to implement your own idea with the frontend of your choice. As an example below is a screenshot of the full voting application which is accessible [here](https://github.com/alephium/voting-demo) (TODO: replace with deployed app URL). We will implement a minimalist version of this application using the same API client and contracts but a simpler UI in React. No prior React knowledge is not required.
 
-<img title="demo" src="./assets/full-app.JPG" alt="Full application" >
+<img title="demo" src="./assets/full-app.JPG" alt="Full application screenshot" >
 
 ## Table of Contents
 
@@ -50,13 +50,13 @@ Alephium is a sharded blockchain where addresses are randomly divided among `G` 
 
 Alephium uses the UTXO (unspent transaction output) model for its native currency **ALPH**. In simple words a UTXO can be pictured like a coin that can be used only once by registering a transaction on the network. Each transaction takes some UTXOs as input and produces new UTXOs as output. For example if address  `Alice` in group `i` only has one UTXO of 100 **ALPH** and wants to transfer 10 **ALPH** to address `Bob` in group `j`, the transaction in the chain `(i, j)` will consume the 100 **ALPH** input UTXO (hence it can no longer be used) and produce two new UTXOs, one being the 90 **ALPH** for `Bob` and the other is the excess of money going back to `Alice`. In this model, the total amount of money owned by an address is simply the sum the address UTXOs. Just like you would sum the coins in your pocket wallet to count your money.
 
-<img title="ALPH-transaction" src="./assets/ALPH-transaction.png" >
+<img title="ALPH-transaction" src="./assets/ALPH-transaction.png" alt="ALPH transaction diagram">
 
 A UTXO can also contain a list of tokens owned by an address. However it is not possible to create a UTXO with some tokens and 0 **ALPH**. UTXOs should always have a small amount of **ALPH**. For example, let's say that `Alice` wants to organize a voting between two people. She writes and deploys a smart contract with two tokens, one for each voter.
 
 The contract deployment transaction will generate two UTXOs. The first is of type "contract" which is assigned to the created contract address. It contains two units of a new token that must be transferred to voters and a small amount of **ALPH** payed by `Alice`. This UTXO can only be used by submitting a transaction which will trigger the execution of the contract logic. The second UTXO is owned by address `Alice` and is again the excess of money used for the transaction.
 
-<img title="contract transaction" src="./assets/contract-transaction.png" >
+<img title="contract transaction" src="./assets/contract-transaction.png" alt="contract deployment diagram">
 
 Smart contracts can only interact with addresses in the same group beacause they are supported in intra-group shards. This means that a contract deployed by an address in group `i` will have its created address in group `i` and the deployment transaction belongs to chain `(i, i)`. Finally, the contract can only interact or exchange assets with addresses in group `i`.
 
@@ -237,7 +237,7 @@ $ npm run start
 
 The following React application should open at URL `http://localhost:3000`. This app is a very minimalist reproduction of the original application so we can focus on the code to deploy the contract and interact with it. We will just implement the logic behind each button.
 
-<img title="demo" src="./assets/tuto-app.JPG" alt="demo" >
+<img title="demo" src="./assets/tuto-app.JPG" alt="demo" alt="Tutorial app screenshot">
 
 
 The files of interest for this tutorial are the following:
@@ -400,7 +400,8 @@ Steps 3 - 6 are done with method `deployContract` for a `TxContract` and `deploy
 
 ## Contract Generation
 Open the file  `src/util/voting.tsx` and paste the following function which returns the contract as a string for a given number of voters.
-```Typescript
+
+```tsx
 const utxoFee = '50000000000000'
 export function createContract(nVoters: number): string {
   const votersTransfers: string[] = []
