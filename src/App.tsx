@@ -1,6 +1,16 @@
 import { useState } from 'react'
 import './App.css'
 import Client from './util/client'
+import {
+  createContract,
+  initialContractState,
+  hexStringToStr,
+  allocateTokenScript,
+  createVotingScript,
+  closeVotingScript
+} from './util/voting'
+import { CONTRACTGAS } from './util/client'
+import { Address, Bool, ByteVec, U256, TxResult } from 'alephium-js/dist/api/api-alephium'
 
 const App = () => {
   const settings = {
@@ -16,23 +26,71 @@ const App = () => {
   const client = new Client(settings.nodeHost, settings.wallet1.name, settings.wallet1.password)
 
   const deployNewContract = async () => {
-    return Promise.reject('Not implemented yet')
+    await client.walletUnlock()
+    const wallet1Address = await client.getActiveAddress()
+    const votingSetup = {
+      title: 'My first voting contract',
+      voters: [wallet1Address],
+      administrator: wallet1Address
+    }
+    const contractStringCode = createContract(votingSetup.voters.length)
+    const state = initialContractState(votingSetup.title, votingSetup.administrator, votingSetup.voters)
+    const contractTxResult: TxResult = await client.deployContract(
+      contractStringCode,
+      CONTRACTGAS,
+      state,
+      `${votingSetup.voters.length}`
+    )
+    logTransactionUrl(settings.explorerURL, contractTxResult.txId)
   }
 
   const showState = async (contractDeploymentId: string) => {
-    return Promise.reject('Not implemented yet')
+    const state = await client.getContractState(contractDeploymentId)
+    const title = hexStringToStr((state.fields[0] as ByteVec).value)
+    const yes = (state.fields[1] as U256).value
+    const no = (state.fields[2] as U256).value
+    const isClosed = (state.fields[3] as Bool).value
+    const initialized = (state.fields[4] as Bool).value
+    const admin = (state.fields[5] as Address).value
+    const voters = state.fields.slice(6, state.fields.length).map((val) => val.value)
+    const stateString = `
+      Title: ${title}
+      Yes: ${yes}
+      No: ${no}
+      isClosed: ${isClosed}
+      initialized: ${initialized}
+      admin: ${admin}
+      voters: [${voters}]
+      `
+    alert(stateString)
+    console.log(stateString)
   }
 
   const allocateTokens = async (contractDeploymentId: string) => {
-    return Promise.reject('Not implemented yet')
+    await client.walletUnlock()
+    const contractRef = await client.getContractRef(contractDeploymentId)
+    const nVoters = await client.getNVoters(contractDeploymentId)
+    const txScript = allocateTokenScript(contractRef, nVoters)
+    const txResult = await client.deployScript(txScript)
+    logTransactionUrl(settings.explorerURL, txResult.txId)
   }
 
   const vote = async (contractDeploymentId: string, choice: boolean) => {
-    return Promise.reject('Not implemented yet')
+    await client.walletUnlock()
+    const contractRef = await client.getContractRef(contractDeploymentId)
+    const nVoters = await client.getNVoters(contractDeploymentId)
+    const txScript = createVotingScript(choice, contractRef, nVoters)
+    const txResult = await client.deployScript(txScript)
+    logTransactionUrl(settings.explorerURL, txResult.txId)
   }
 
   const close = async (contractDeploymentId: string) => {
-    return Promise.reject('Not implemented yet')
+    await client.walletUnlock()
+    const contractRef = await client.getContractRef(contractDeploymentId)
+    const nVoters = await client.getNVoters(contractDeploymentId)
+    const txScript = closeVotingScript(contractRef, nVoters)
+    const txResult = await client.deployScript(txScript)
+    logTransactionUrl(settings.explorerURL, txResult.txId)
   }
 
   return (
