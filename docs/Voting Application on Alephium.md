@@ -6,25 +6,27 @@ The goal of this tutorial is to guide you through the process of building a dApp
 
 ### Table of Contents
 
-- [Requirements](#requirements)
-- [Voting application protocol](#voting-application-protocol)
-- [Alephium transactional model](#alephium-transactional-model)
-- [Voting Smart Contracts](#voting-smart-contracts)
-  - [Token allocation](#token-allocation)
-  - [Vote](#vote)
-  - [Close](#close)
-- [Local node setup](#local-node-setup)
-- [Project structure](#project-structure)
-- [Contract Deployment in TypeScript](#contract-deployment-in-typescript)
-  - [Overview](#overview)
-  - [Contract Generation](#contract-generation)
-  - [Deployment](#deployment)
-  - [Retrieve state](#retrieve-state)
-  - [Token allocation](#token-allocation-1)
-  - [Vote](#vote-1)
-  - [Closing](#closing)
-- [Experiments](#experiments)
-- [Conclusion](#conclusion)
+- [Voting Application on Alephium](#voting-application-on-alephium)
+    - [Table of Contents](#table-of-contents)
+  - [Requirements](#requirements)
+  - [Voting application protocol](#voting-application-protocol)
+  - [Alephium transactional model](#alephium-transactional-model)
+  - [Voting Smart Contracts](#voting-smart-contracts)
+    - [Token allocation](#token-allocation)
+    - [Vote](#vote)
+    - [Close](#close)
+  - [Local node setup](#local-node-setup)
+  - [Project structure](#project-structure)
+  - [Contract Deployment in TypeScript](#contract-deployment-in-typescript)
+    - [Overview](#overview)
+    - [Contract Generation](#contract-generation)
+    - [Deployment](#deployment)
+    - [Retrieve state](#retrieve-state)
+    - [Token allocation](#token-allocation-1)
+    - [Vote](#vote-1)
+    - [Closing](#closing)
+  - [Experiments](#experiments)
+  - [Conclusion](#conclusion)
 
 
 ## Requirements
@@ -257,7 +259,7 @@ src
 
 Open the file `App.tsx`. The application is a simple component `App` that defines a few settings: the URL of the local node, the explorer URL, and a wallet for each voter. Please make sure you have created a miner wallet with some funds on your local node as explained in the [wallet guide](https://wiki.alephium.org/Wallet-Guide.html).
 
-The component state variable `contractDeploymentId` is bound to the page input. Then an instance of the node API client `Client` in `src/util/client.tsx` is created. This client is a wrapper around the [`alephium-js`](https://github.com/alephium/alephium-js) library. It provides methods to easily deploy your contract and interact with it. Finally, the callback function of each button is defined but must be implemented. We will guide you through their implementation step-by-step.
+The component state variable `contractDeploymentId` is bound to the page input and a variable `networkType` indicating the local node network is declared. Then an instance of the node API client `Client` in `src/util/client.tsx` is created. This client is a wrapper around the [`alephium-js`](https://github.com/alephium/alephium-js) library. It provides methods to easily deploy your contract and interact with it. We poll the local node with the client every 15 seconds to update `networkType` and display a badge indicating if the node is running on the testnet. Finally, the callback function of each button is defined but must be implemented. We will guide you through their implementation step-by-step.
 
 ```tsx
 const App = () => {
@@ -271,7 +273,27 @@ const App = () => {
   }
 
   const [contractDeploymentId, setContractDeploymentId] = useState('')
-  const client = new Client(settings.nodeHost, settings.wallet1.name, settings.wallet1.password)
+  const [networkType, setNetworkType] = useState<NetworkType | undefined>(undefined)
+
+  const client = useMemo(
+    () => new Client(settings.nodeHost, settings.wallet1.name, settings.wallet1.password),
+    [settings.nodeHost, settings.wallet1.name, settings.wallet1.password]
+  )
+
+  const pollNetworkType = (client: Client) => {
+    client
+      .getNetworkType()
+      .then(setNetworkType)
+      .catch(() => setNetworkType(NetworkType.UNREACHABLE))
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      pollNetworkType(client)
+    }, 15000)
+    pollNetworkType(client)
+    return () => clearInterval(interval)
+  }, [client])
 
   const deployNewContract = async () => {
     return Promise.reject('Not implemented yet')
@@ -297,6 +319,7 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <h1>Voting dApp Tutorial</h1>
+        {networkType !== undefined && <NetworkBadge networkType={networkType} />}
         <div className="container">
           <h2>Deploy the voting contract</h2>
           <button onClick={() => catchAndAlert(deployNewContract())}>Create Contract</button>

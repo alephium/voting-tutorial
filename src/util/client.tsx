@@ -22,6 +22,13 @@ export interface ContractRef {
   tokenId: string
 }
 
+export enum NetworkType {
+  MAINNET,
+  TESTNET,
+  UNKNOWN,
+  UNREACHABLE
+}
+
 export const CONTRACTGAS = 80000
 
 class Client {
@@ -202,6 +209,18 @@ class Client {
   getNVoters = async (txId: string): Promise<number> => {
     return this.getContractState(txId).then((result: ContractStateResult) => {
       return result.fields.length - 6
+    })
+  }
+
+  async getNetworkType(): Promise<NetworkType> {
+    return this.fetch(this.api.infos.getInfosSelfClique()).then((tResult) => {
+      if (tResult.networkId == 0) {
+        return NetworkType.MAINNET
+      } else if (tResult.networkId == 1) {
+        return NetworkType.TESTNET
+      } else {
+        return NetworkType.UNKNOWN
+      }
     })
   }
 }
