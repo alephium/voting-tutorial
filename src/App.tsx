@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
-import Client from './util/client'
 import {
   createContract,
   initialContractState,
@@ -11,6 +10,8 @@ import {
 } from './util/voting'
 import { CONTRACTGAS } from './util/client'
 import { Address, Bool, ByteVec, U256, TxResult } from 'alephium-js/dist/api/api-alephium'
+import { NetworkBadge } from './components/NetworkBadge'
+import Client, { NetworkType } from './util/client'
 
 const App = () => {
   const settings = {
@@ -23,7 +24,27 @@ const App = () => {
   }
 
   const [contractDeploymentId, setContractDeploymentId] = useState('')
-  const client = new Client(settings.nodeHost, settings.wallet1.name, settings.wallet1.password)
+  const [networkType, setNetworkType] = useState<NetworkType | undefined>(undefined)
+
+  const client = useMemo(
+    () => new Client(settings.nodeHost, settings.wallet1.name, settings.wallet1.password),
+    [settings.nodeHost, settings.wallet1.name, settings.wallet1.password]
+  )
+
+  const pollNetworkType = (client: Client) => {
+    client
+      .getNetworkType()
+      .then(setNetworkType)
+      .catch(() => setNetworkType(NetworkType.UNREACHABLE))
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      pollNetworkType(client)
+    }, 15000)
+    pollNetworkType(client)
+    return () => clearInterval(interval)
+  }, [client])
 
   const deployNewContract = async () => {
     await client.walletUnlock()
@@ -97,6 +118,7 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <h1>Voting dApp Tutorial</h1>
+        {networkType !== undefined && <NetworkBadge networkType={networkType} />}
         <div className="container">
           <h2>Deploy the voting contract</h2>
           <button onClick={() => catchAndAlert(deployNewContract())}>Create Contract</button>
