@@ -166,7 +166,7 @@ TxScript TokenAllocation {
 }
 ```
 
-The main function of the script will be executed. The script loads the contract, then it approves some **ALPH** to be used in the next payable function call `voting.allocateTokens`. Finally, it calls the token allocation function of the contract. The built-in function call `approveAlph!(caller, 50000000000000 * 2)` is mandatory because a contract cannot use assets from other addresses without explicit approval by the owner. Any excess of approved assets will return to the owner as UTXOs like in the example with `Alice` and `Bob`.
+The main function of the script will be executed. A `TxScript` should always have its main function marked as `payable`. The script loads the contract, then it approves some **ALPH** to be used in the next payable function call `voting.allocateTokens`. Finally, it calls the token allocation function of the contract. The built-in function call `approveAlph!(caller, 50000000000000 * 2)` is mandatory because a contract cannot use assets from other addresses without explicit approval by the owner. Any excess of approved assets will return to the owner as UTXOs like in the example with `Alice` and `Bob`.
 
 You might be wondering why the administrator sends some **ALPH** to each voter? Couldn't we just transfer the tokens? From the previous section, you should remember that tokens are contained in UTXOs, and every UTXO needs to have a small amount of **ALPH**. For each voter, the transaction will create a UTXO with a single token unit and `50000000000000 = 0.00005 ALPH` paid the administrator. Voters will send this amount back to the administrator when voting.
 
@@ -207,7 +207,7 @@ This function simply approves the token and **ALPH** to be used and then calls t
 
 ### Close
 
-At the end of the voting period, the administrator calls the `close()` function of the contract. The implementation is straightforward.
+At the end of the voting period, the administrator calls the `close()` function of the contract. The implementation is straightforward. You will remark that no assets are used by the function, hence it does not require the `payable modifier`.
 
 ```rust
 pub fn close() -> () {
@@ -217,11 +217,11 @@ pub fn close() -> () {
 }
 ```
 
-You will remark that no assets are used by the function, hence it does not require the `payable modifier`. The associated `TxScript` is the following:
+The associated `TxScript` is the following:
 
 ```rust
 TxScript ClosingScript {
-   pub fn main() -> () {
+   pub payable fn main() -> () {
       let voting = Voting(#contractId)
       voting.close()
    }
