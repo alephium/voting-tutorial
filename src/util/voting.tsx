@@ -88,7 +88,7 @@ export function createVotingScript(choice: boolean, contractRef: ContractRef, nV
 
 export function closeVotingScript(contractRef: ContractRef, nVoters: number): string {
   return `TxScript ClosingScript {
-    pub fn main() -> () {
+    pub payable fn main() -> () {
       let voting = Voting(#${contractRef.tokenId})
       voting.close()
     }
